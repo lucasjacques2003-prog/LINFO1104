@@ -2,6 +2,8 @@ functor
 export
     decode:Decode
     executeBlockchain:ExecuteBlockchain
+
+ 
 define
 
     %% STUDENT START:
@@ -10,7 +12,7 @@ define
 
     %% STUDENT END
 
-    fun {Decode Blockchain}
+    fun {Decode Blockchain} % exemple d'une 11,3,120137,60,32,120042,68
         %% STUDENT START:
         ""   % placeholder
         %% STUDENT END
