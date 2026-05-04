@@ -14,7 +14,7 @@ define
 
     fun {Decode Blockchain} % exemple d'une 11,3,120137,60,32,120042,68
         %% STUDENT START:
-        ""   % placeholder
+        ""   % placeholder %%test branch1 merge plusieurs modifs
         %% STUDENT END
     end
 
