@@ -1,3 +1,17 @@
+%{Main}
+   │
+   ├─ readGenesisFromFile      → GenesisState
+   ├─ readTransactionsFromFile → Transactions
+   │
+   └─ RunBlockchain
+         │
+         └─ executeBlockchain  → FinalState # FinalBlockchain
+                                      │
+                                      ├─ show FinalState
+                                      ├─ show FinalBlockchain
+                                      └─ decode FinalBlockchain → phrase secrète
+
+
 functor
 import
     Application

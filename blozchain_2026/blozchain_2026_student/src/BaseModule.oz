@@ -7,12 +7,12 @@ export
 define
 
     %% STUDENT START:
-    
+    % je suis dans branche 1 
     %% PUT ANY AUXILIARY/HELPER FUNCTIONS THAT YOU NEED
 
     %% STUDENT END
 
-    fun {Decode Blockchain} % exemple d'une 11,3,120137,60,32,120042,68
+    fun {Decode Blockchain} 
         %% STUDENT START:
         ""   % placeholder
         %% STUDENT END
