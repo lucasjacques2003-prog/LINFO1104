@@ -14,7 +14,7 @@ define
 
     fun {Decode Blockchain} 
         %% STUDENT START:
-        ""   % placeholder
+        ""   % placeholder %%test branch1 merge plusieurs modifs
         %% STUDENT END
     end
 
