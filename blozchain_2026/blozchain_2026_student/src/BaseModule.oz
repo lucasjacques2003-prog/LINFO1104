@@ -7,7 +7,11 @@ export
 define
 
     %% STUDENT START:
-    % je suis dans branche 1 
+    % je suis dans la branche deux 
+    declare 
+    fun {lol x}
+        x + 1
+    end
     %% PUT ANY AUXILIARY/HELPER FUNCTIONS THAT YOU NEED
 
     %% STUDENT END
