@@ -3,16 +3,35 @@ export
     decode:Decode
     executeBlockchain:ExecuteBlockchain
 
- 
+
 define
-    %%Test 2 modifs même ligne
-    % j'écris n'importe quoi pour essayer de merger la branche deux
     %% STUDENT START:
-    % je suis dans la branche deux 
-    declare 
-    fun {lol x}
-        x + 1
+    fun {HashTransaction Transaction}
+        Transaction.nonce + Transaction.sender + Transaction.receiver + Transaction.value
     end
+
+    fun {IntPow Base Exp}
+        if Exp == 0 then 1
+        else Base * {IntPow Base Exp-1}
+        end
+    end
+    fun {EffortTransaction Transaction}
+        fun{EffortTransactionHelper Value Acc}
+            if Value < 10 then {IntPow 2 Acc}
+            else {IntPow 2 Acc} + {EffortTransactionHelper Value//10 Acc+1}
+            end
+        end
+    in
+        {EffortTransactionHelper Transaction.value 0}
+    end
+    fun{SumHashListTransactions Transactions}
+        case Transactions of nil then 0
+        [] Ti|Rest then {HashTransaction Ti} + {SumHashListTransactions Rest}
+        end
+    end
+    fun{HashBlock Block}
+        Block.number + Block.previousHash + {SumHashListTransactions Block.transactions}
+end
     %% PUT ANY AUXILIARY/HELPER FUNCTIONS THAT YOU NEED
 
     %% STUDENT END
