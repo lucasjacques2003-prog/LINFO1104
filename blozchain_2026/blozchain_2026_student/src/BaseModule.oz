@@ -24,6 +24,14 @@ define
     in
         {EffortTransactionHelper Transaction.value 0}
     end
+    fun{SumHashListTransactions Transactions}
+        case Transactions of nil then 0
+        [] Ti|Rest then {HashTransaction Ti} + {SumHashListTransactions Rest}
+        end
+    end
+    fun{HashBlock Block}
+        Block.number + Block.previousHash + {SumHashListTransactions Block.transactions}
+end
     %% PUT ANY AUXILIARY/HELPER FUNCTIONS THAT YOU NEED
 
     %% STUDENT END
