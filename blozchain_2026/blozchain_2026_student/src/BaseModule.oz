@@ -31,7 +31,25 @@ define
     end
     fun{HashBlock Block}
         Block.number + Block.previousHash + {SumHashListTransactions Block.transactions}
-end
+    end
+    fun{ValidateTransaction Transaction State}
+        if Transaction.nonce \= State.(Transaction.sender).nonce + 1 then false
+        elseif Transaction.hash \= {HashTransaction Transaction} then false
+        elseif Transaction.value > State.(Transaction.sender).balance then false
+        elseif Transaction.value < 0 then false
+        elseif Transaction.max_effort < 0 then false
+        elseif Transaction.max_effort < {EffortTransaction Transaction} then false
+        else true
+        end
+    end
+    fun{ValidateBlock Block PreviousBlock}
+        if Block.number \= PreviousBlock.number + 1 then false
+        elseif Block.previousHash \= PreviousBlock.hash then false
+        elseif Block.hash \= {HashBlock Block} then false
+        else true
+        end
+    end
+
     %% PUT ANY AUXILIARY/HELPER FUNCTIONS THAT YOU NEED
 
     %% STUDENT END
