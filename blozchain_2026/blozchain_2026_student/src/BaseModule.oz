@@ -1,4 +1,6 @@
 functor
+import % ligne ajoutée 
+    System % ligne ajoutée
 export
     decode:Decode
     executeBlockchain:ExecuteBlockchain
@@ -6,6 +8,16 @@ export
 
 define
     %% STUDENT START:
+    % J'ai ajouté ça pour avoir la visualisation de tout 
+    proc {PrintBlockchain Blockchain}
+        case Blockchain of nil then skip
+        [] Block|Rest then
+            {System.show Block}
+            {PrintBlockchain Rest}
+        end
+    end
+
+    
     fun {IntPow Base Exp}
         if Exp == 0 then 1
         else Base * {IntPow Base Exp-1}
@@ -264,6 +276,7 @@ define
         InitialBlock = {BuildBlock {LastBlock InitialBlockchain}}
     in
         {ExecuteBlockchainHelper Transactions InitialState InitialBlock InitialBlockchain FinalState FinalBlockchain}
+        {PrintBlockchain FinalBlockchain} % ligne ajoutée
     end
         %% STUDENT END
 end
