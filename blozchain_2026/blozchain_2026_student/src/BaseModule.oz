@@ -251,8 +251,7 @@ define
             case Blocks of nil then nil
             [] Block|Rest then
                 {List.append
-                    {DigitsToLetters {HashToDigits Block.hash}}
-                    {ProcessBlocks Rest}}
+                    {DigitsToLetters {HashToDigits Block.hash}}{ProcessBlocks Rest}}
             end
         end
     in
