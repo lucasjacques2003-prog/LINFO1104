@@ -1,21 +1,3 @@
-Fichier texte
-     │
-     ▼ Open.file + read
-Grosse chaîne
-     │
-     ▼ String.tokens &\n
-Liste de lignes
-     │
-     ▼ String.tokens &, (par ligne)
-Liste de champs (chaînes)
-     │
-     ▼ ParseTransaction / ParseGenesisFields
-Record tx(...) / paire addr#balance
-     │
-     ▼ ParseTransactionsRecursively / List.toRecord
-Liste de tx  /  genesis(addr:bal ...)
-
-
 functor
 import
     Open
