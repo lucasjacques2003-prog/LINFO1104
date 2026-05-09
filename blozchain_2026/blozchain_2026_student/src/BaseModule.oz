@@ -123,18 +123,6 @@ define
         end
     end
 
-    proc {AddTransactionsToBlock Transactions Block State NewBlock NewState}
-        case Transactions of nil then
-            NewState = State
-            NewBlock = Block
-        [] Ti|Rest then
-            AccBlock AccState
-        in
-            {AddTransactionToBlock Ti Block State AccBlock AccState}
-            {AddTransactionsToBlock Rest AccBlock AccState NewBlock NewState}
-        end
-    end
-
     fun {LastBlock Blockchain}
         case Blockchain of nil then block(number: ~1 previousHash: 0 transactions: nil hash: 0) %% Genesis block permettant la vérification de validité du premier bloc de la blockchain
         []Block|nil then Block
