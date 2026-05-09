@@ -19,7 +19,7 @@ define
     fun {EffortTransaction Transaction}
         fun{EffortTransactionHelper Value Acc}
             if Value < 10 then {IntPow 2 Acc}
-            else {IntPow 2 Acc} + {EffortTransactionHelper Value//10 Acc+1}
+            else {IntPow 2 Acc} + {EffortTransactionHelper (Value div 10) (Acc+1)}
             end
         end
     in
