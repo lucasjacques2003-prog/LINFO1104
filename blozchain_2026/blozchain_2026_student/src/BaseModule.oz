@@ -79,7 +79,7 @@ define
     fun {GenesisToStateHelper Genesis Addresses StateCurrent}
         case Addresses of nil then StateCurrent
         [] Address|Rest then
-            NewUser = user(balance:(Genesis.Address) nonce:0)
+            NewUser = user(balance:(Genesis.(Address)) nonce:0)
             NewState = {AdjoinAt StateCurrent Address NewUser}
         in
             {GenesisToStateHelper Genesis Rest NewState}
@@ -188,8 +188,7 @@ define
 
     %% STUDENT END
 
-    fun {Decode Blockchain} 
-        fun {Decode Blockchain}
+    fun {Decode Blockchain}
         fun {NumberToLetter N}
             case N of 10 then &a
             [] 11 then &b
