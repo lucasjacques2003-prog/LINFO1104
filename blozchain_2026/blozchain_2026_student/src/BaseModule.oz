@@ -183,15 +183,80 @@ define
         end
     end
                     
-
+    
                 
 
     %% STUDENT END
 
     fun {Decode Blockchain} 
-        %% STUDENT START:
-        ""   % placeholder 
-        %% STUDENT END
+        fun {Decode Blockchain}
+        fun {NumberToLetter N}
+            case N of 10 then &a
+            [] 11 then &b
+            [] 12 then &c
+            [] 13 then &d
+            [] 14 then &e
+            [] 15 then &f
+            [] 16 then &g
+            [] 17 then &h
+            [] 18 then &i
+            [] 19 then &j
+            [] 20 then &k
+            [] 21 then &l
+            [] 22 then &m
+            [] 23 then &n
+            [] 24 then &o
+            [] 25 then &p
+            [] 26 then &q
+            [] 27 then &r
+            [] 28 then &s
+            [] 29 then &t
+            [] 30 then &u
+            [] 31 then &v
+            [] 32 then &w
+            [] 33 then &x
+            [] 34 then &y
+            [] 35 then &z
+            [] 36 then 32
+            end
+        end
+
+
+        fun {HashToDigits Hash} % transformer un nombre entier en liste de chiffres.
+            fun {Helper N Acc}
+                if N == 0 then Acc
+                else {Helper (N div 10) ((N mod 10)|Acc)}
+                end
+            end
+        in
+            if Hash == 0 then nil
+            else {Helper Hash nil}
+            end
+        end
+
+
+        fun {DigitsToLetters Digits} % Fonction qui convertit une liste de chiffres en lettres.
+            case Digits of nil then nil
+            [] _|nil then nil % s'il n'y a qu'un chiffre, on ignore parce que c'est par pair.
+            [] D1|D2|Rest then 
+                Pair = D1*10 + D2
+                ModResult = Pair mod 37
+                FinalNumber = if ModResult < 10 then 36 else ModResult end
+            in
+                {NumberToLetter FinalNumber} | {DigitsToLetters Rest}
+            end
+        end
+
+        fun {ProcessBlocks Blocks} 
+            case Blocks of nil then nil
+            [] Block|Rest then
+                {List.append
+                    {DigitsToLetters {HashToDigits Block.hash}}
+                    {ProcessBlocks Rest}}
+            end
+        end
+    in
+        {ProcessBlocks Blockchain}
     end
 
     proc {ExecuteBlockchain GenesisState Transactions FinalState FinalBlockchain}

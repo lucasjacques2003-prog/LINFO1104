@@ -198,9 +198,7 @@ define
     %% Fonctions exportées
     %% =====================================================
 
-    fun {Decode Blockchain}
-        ""   %% À implémenter en 2.2
-    end
+    
 
     proc {ExecuteBlockchain GenesisState Transactions FinalState FinalBlockchain}
         InitialState = {GenesisToState GenesisState}
