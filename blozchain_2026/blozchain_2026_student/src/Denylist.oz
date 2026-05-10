@@ -115,15 +115,16 @@ define
     proc {AddTransactionToBlock Transaction Block State NewBlock NewState} % Ajoute une transaction a un bloc apres validation, retourne le bloc et l'etat mis a jour
         NewTransaction = {AdjoinAt Transaction effort {EffortTransaction Transaction}}
         UpdatedSender1 = {AdjoinAt State.(NewTransaction.sender) txCount State.(NewTransaction.sender).txCount + 1}
-        UpdatedSender2 = if UpdatedSender1.txCount > 3 then
-            {AdjoinAt UpdatedSender1 denied true}
-        else
-            UpdatedSender1
-        end
-        UpdatedState = {AdjoinAt State NewTransaction.sender UpdatedSender2}
+        UpdatedState = {AdjoinAt State NewTransaction.sender UpdatedSender1}
     in
         if {ValidateTransaction NewTransaction UpdatedState} andthen {SumEffortListTransactions Block.transactions} + NewTransaction.effort =< 300 then
-            NewState = {ApplyTransaction NewTransaction UpdatedState}
+            TempState = {ApplyTransaction NewTransaction UpdatedState}
+            UpdatedSender2 = if UpdatedSender1.txCount >= 3 then % On ajoute le sender a la denylist si il a 3 transactions dasn le meme bloc
+                {AdjoinAt TempState.(NewTransaction.sender) denied true}
+            else
+                TempState.(NewTransaction.sender)
+            end
+            NewState = {AdjoinAt TempState NewTransaction.sender UpdatedSender2}
             NewBlock = {AdjoinAt Block transactions NewTransaction|Block.transactions}
         else
             NewState = UpdatedState
