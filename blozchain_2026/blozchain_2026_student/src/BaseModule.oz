@@ -24,11 +24,11 @@ define
         end
     end
 
-    fun {HashTransaction Transaction}
+    fun {HashTransaction Transaction} % Calcule le hash d'une transaction
         (Transaction.nonce + Transaction.sender + Transaction.receiver + Transaction.value) mod {IntPow 10 6}
     end
 
-    fun {EffortTransaction Transaction}
+    fun {EffortTransaction Transaction} % Calcule l'effort d'une transaction
         fun{EffortTransactionHelper Value Acc}
             if Value < 10 then {IntPow 2 Acc}
             else {IntPow 2 Acc} + {EffortTransactionHelper (Value div 10) (Acc+1)}
@@ -38,7 +38,7 @@ define
         {EffortTransactionHelper Transaction.value 0}
     end
 
-    fun {SumEffortListTransactions Transactions}
+    fun {SumEffortListTransactions Transactions} % Calcule l'effort total d'une liste de transactions
         fun {SumEffortListTransactionsHelper Transactions Acc}
             case Transactions of nil then Acc
             [] Ti|Rest then {SumEffortListTransactionsHelper Rest Acc+{EffortTransaction Ti}}
@@ -48,7 +48,7 @@ define
         {SumEffortListTransactionsHelper Transactions 0}
     end
         
-    fun{SumHashListTransactions Transactions}
+    fun{SumHashListTransactions Transactions} % Calcule la somme des hash d'une liste de transactions
         fun {SumHashListTransactionsHelper Transactions Acc}
             case Transactions of nil then Acc
             [] Ti|Rest then {SumHashListTransactionsHelper Rest Acc+{HashTransaction Ti}}
@@ -58,11 +58,11 @@ define
         {SumHashListTransactionsHelper Transactions 0}
     end
 
-    fun {HashBlock Block}
+    fun {HashBlock Block} % Calcule le hash d'un bloc
         (Block.number + Block.previousHash + {SumHashListTransactions Block.transactions}) mod {IntPow 10 6}
     end
 
-    fun {ValidateTransaction Transaction State}
+    fun {ValidateTransaction Transaction State} %Verifie si une transaction est valide en fonction de l'état actuel
         if Transaction.nonce \= State.(Transaction.sender).nonce + 1 then false
         elseif Transaction.hash \= {HashTransaction Transaction} then false
         elseif Transaction.value > State.(Transaction.sender).balance then false
@@ -73,7 +73,7 @@ define
         end
     end
 
-    fun {ValidateBlock Block PreviousBlock}
+    fun {ValidateBlock Block PreviousBlock} %Verifie si un bloc est valide en fonction du bloc précédent
         if Block.number \= PreviousBlock.number + 1 then false
         elseif Block.previousHash \= PreviousBlock.hash then false
         elseif Block.hash \= {HashBlock Block} then false
@@ -82,7 +82,7 @@ define
         end
     end
 
-    fun {GenesisToState Genesis}
+    fun {GenesisToState Genesis} % Crée un état initial a partir du genesis
         Addresses = {Arity Genesis}
     in
         {GenesisToStateHelper Genesis Addresses state}
@@ -98,7 +98,7 @@ define
         end
     end
 
-    fun {ApplyTransaction Transaction State}
+    fun {ApplyTransaction Transaction State} % Applique une transaction, mettant a jour les soldes et nonce des utilisateurs dasn un nouvel etat
         NewSender = user(balance: State.(Transaction.sender).balance - Transaction.value nonce: State.(Transaction.sender).nonce +1)
         NewReceiver = if {HasFeature State Transaction.receiver} then
             user(balance: State.(Transaction.receiver).balance + Transaction.value nonce: State.(Transaction.receiver).nonce)
@@ -111,7 +111,7 @@ define
         NewState2
     end
 
-    proc {AddTransactionToBlock Transaction Block State NewBlock NewState}
+    proc {AddTransactionToBlock Transaction Block State NewBlock NewState} % Ajoute une transaction a un bloc apres validation, retourne le bloc et l'etat mis a jour
         NewTransaction = {AdjoinAt Transaction effort {EffortTransaction Transaction}}
     in
         if {ValidateTransaction NewTransaction State} andthen {SumEffortListTransactions Block.transactions} + NewTransaction.effort =< 300 then
@@ -123,26 +123,26 @@ define
         end
     end
 
-    fun {LastBlock Blockchain}
-        case Blockchain of nil then block(number: ~1 previousHash: 0 transactions: nil hash: 0) %% Genesis block permettant la vérification de validité du premier bloc de la blockchain
+    fun {LastBlock Blockchain} % fonction permlettant d'obtenir le dernier bloc de la blockchain
+        case Blockchain of nil then block(number: ~1 previousHash: 0 transactions: nil hash: 0) %% Genesis block permettant la verification de validite du premier bloc de la blockchain
         []Block|nil then Block
         []Block|Rest then {LastBlock Rest}
         end
     end
 
-    fun {BuildBlock PreviousBlock}
+    fun {BuildBlock PreviousBlock} % construit un nouveau bloc vide a partir du bloc precedent
         NewBlock = block(number: PreviousBlock.number + 1 previousHash: PreviousBlock.hash transactions: nil hash: 0)
     in
         NewBlock
     end
 
-    fun {FinalizeBlock Block}
-        ReversedTransactionsBlock = {AdjoinAt Block transactions {List.reverse Block.transactions}}
+    fun {FinalizeBlock Block} % Finalise un bloc en calculant son hash
+        ReversedTransactionsBlock = {AdjoinAt Block transactions {List.reverse Block.transactions}} % On retoiurne la liste des transactions car les dernieres ont ete ajoute en tete de liste dans AddTransactionToBlock
     in
         {AdjoinAt ReversedTransactionsBlock hash {HashBlock ReversedTransactionsBlock}}
     end
 
-    fun {AddBlockToBlockchain Block Blockchain}
+    fun {AddBlockToBlockchain Block Blockchain} % Ajoute un bloc a la blockchain retourne la nouvelle blockchain
         case Blockchain of nil then
             Block|nil
         []B|nil then
@@ -153,16 +153,16 @@ define
     end
     
     proc {ExecuteBlockchainHelper Transactions State CurrentBlock Blockchain FinalState FinalBlockchain}
-        case Transactions of nil then
-            FinalizedBlock = {FinalizeBlock CurrentBlock}
+        case Transactions of nil then % Si plus de transactions a traiter, on finalise le bloc en cours et on l'ajoute a la blockchain si valide
+            FinalizedBlock = {FinalizeBlock CurrentBlock} 
         in
             if {ValidateBlock FinalizedBlock {LastBlock Blockchain}} then
                 FinalBlockchain = {AddBlockToBlockchain FinalizedBlock Blockchain}
-            else
+            else % Si le bloc n'est pas valide, on l'ignore
                 FinalBlockchain = Blockchain
             end
             FinalState = State
-        []Ti|Rest then
+        []Ti|Rest then % Si il reste des transations a traiter, on verifie que la transaction courante appartienne au bloc en cours, si oui on essaye de l'ajouter au bloc, sinon on finalise le bloc en cours et on commence a construire le bloc suivant
             if Ti.block_number == CurrentBlock.number then
                 NewBlock NewState
             in
