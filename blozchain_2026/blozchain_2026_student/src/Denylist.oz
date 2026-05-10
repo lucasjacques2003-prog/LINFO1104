@@ -118,6 +118,8 @@ define
         UpdatedState = {AdjoinAt State NewTransaction.sender UpdatedSender1}
     in
         if {ValidateTransaction NewTransaction UpdatedState} andthen {SumEffortListTransactions Block.transactions} + NewTransaction.effort =< 300 then
+            TempState UpdatedSender2
+        in
             TempState = {ApplyTransaction NewTransaction UpdatedState}
             UpdatedSender2 = if UpdatedSender1.txCount >= 3 then % On ajoute le sender a la denylist si il a 3 transactions dasn le meme bloc
                 {AdjoinAt TempState.(NewTransaction.sender) denied true}
